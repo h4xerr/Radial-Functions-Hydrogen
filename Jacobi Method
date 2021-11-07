@@ -1,7 +1,3 @@
-/* Program Gauss_Jacobi
-   Solution of a system of linear equations by Gauss-Jacobi's iteration
-   method. Testing of diagonal dominance is also incorporated */
-
 #include<stdio.h>
 #include<math.h>
 #include<stdlib.h>
