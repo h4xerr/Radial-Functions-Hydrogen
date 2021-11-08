@@ -1,0 +1,37 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from random import seed
+from random import gauss
+arrx = np.ones((10, 100))
+arry = np.ones((10, 100))
+v=3
+x=0
+y=0
+data=[0]*100
+seed(1)
+delta=0
+# generate some Gaussian values
+for i in range(100):
+    data[i] = gauss(0,0.5)
+    #print(data[i])
+# add reference point
+for i in range(70):
+    x=x+v
+    y=0
+ref=x
+#simulate movement of particle
+for j in range (10):
+    x,y=0,0
+    d=data[j]* math.pi / 180
+    print("delta=",delta)
+    print("NEW PARTICLE ANGLE=",data[j])
+    for i in range(100):
+        if(i==70):
+            delta=ref-x
+        x=x+math.cos(d)*v
+        y=y+math.sin(d)*v
+        arrx[j][i]=x
+        arry[j][i]=y
+
+        print("x=",arrx[j][i],"y=",y,"j=",j,"i=",i)
