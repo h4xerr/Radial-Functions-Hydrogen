@@ -38,8 +38,8 @@ for j in range (1000):
         z=z+math.cos(d)*v                 #Z-axis
         arrx[j][i]=vx                     #proekciq X-axis
         arrz[j][i]=z                      #Z-axis
-        f=abs(vx)/(l*10**-9)                   #omega0
-        delta[i]=f*v/c
+        f=abs(vx)/(l*10**-9)              #omega0
+        delta[i]=f*v/c                    #omega_a-omega_0=omega_0*v/c
         print("z=",arrz[j][i],"vx=",arrx[j][i],"j=",j,"f=",f,"v=",v,"delta[Hz]=",delta[i])
         #print("delta=",delta[i],"i,j=",i,j)
 plt.plot(delta)
