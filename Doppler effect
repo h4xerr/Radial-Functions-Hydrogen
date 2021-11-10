@@ -5,16 +5,20 @@ from random import seed
 from random import gauss
 arrx = np.ones((1000, 100))
 arrz = np.ones((1000, 100))
+delta=np.ones((1000,100))
 l=589                     #nm
 v=300                     #m/s
 c=299792458               #m/s
 f=v/(l*10**-9)
 vx=0
 z=0
-sum=0
-delta=[0]*100
+fin=[0]*1000
+sum=[0]*1000
+k=[0]*1000
+min=[1000]*1000
 data=[0]*1000
 datab=[0]*1000
+interval=[0]*101
 seed(1)
 
 
@@ -32,16 +36,90 @@ for j in range (1000):
     d=data[j]* math.pi / 180
     v=datab[j]
     #print("delta=",delta,"v=",v,"f=",f)
-    print("NEW PARTICLE ANGLE=",data[j])
     for i in range(100):
         vx=vx+math.sin(d)*v               #proekciq X-axis
         z=z+math.cos(d)*v                 #Z-axis
         arrx[j][i]=vx                     #proekciq X-axis
         arrz[j][i]=z                      #Z-axis
         f=abs(vx)/(l*10**-9)              #omega0
-        delta[i]=f*v/c                    #omega_a-omega_0=omega_0*v/c
+        delta[j][i]=f*v/c                    #omega_a-omega_0=omega_0*v/c
         #print("z=",arrz[j][i],"vx=",arrx[j][i],"j=",j,"f=",f,"v=",v,"delta[Hz]=",delta[i])
-        #print("delta=",delta[i],"i,j=",i,j)
-plt.plot(delta)
+i,j=0,0
+
+
+#find mean delta for each speed
+for j in range(1000):
+    #print("NEW PARTICLE SPEED=",datab[j],"angle=",data[j],"delta=",sum/100,"j=",j)
+    sum[j]=0
+    for i in range(99):
+        sum[j] = sum[j] + (delta[j][i+1]-delta[j][i])
+    sum[j]=(sum[j]+delta[j][i+1]-delta[j][i])/100
+    #print("sum=",sum[j], "delta=", delta[j][i+1]-delta[j][i], "i,j=", i, j)
+
+
+#order by speed
+i,j=0,0
+for j in range(1000):
+    for i in range(1000):
+        if(min[j]>datab[i]):
+            min[j]=datab[i]
+            k[j]=i                                                          #use this to remember the index of the first,second,third...minimum so we can later order them
+    #print("min=", min[j], "speed=", datab[i],"i=",i,"j=",j,"k=",k[j])
+    datab[k[j]]=1001
+
+
+
+
+#create new matrix (1000,1) ordered by speed, with values being the deltas for EACH PARTICLE(each speed)
+for j in range(1000):
+    fin[j]=sum[k[j]]                                                    #since my speed is ordered, all i have to do is connect the minimum to it's corresponding delta
+    #print("final=", fin[j],"min=",min[j],"i,j=",i,j,"k=",k[j])
+
+#now i want to make my graph 0-100 instead of 0-1000, i will divide it into 100 blocks, each having an interval of 10
+#the first block will be all values <250, the last block will be all values>350, average them and graph them out
+
+
+
+
+rel=250
+count=0                                         #counter for how many values are <250
+county=0                                        #counter for how many values are >350
+countyy=[0]*101                                     #counter for how many values in interval of 1
+i=1
+
+
+#divide the values in intervals of 1m/s
+for j in range(1000):
+    if(min[j]<=250):
+        interval[0]=interval[0]+fin[j]
+        count+=1
+    elif(min[j]>=350):
+        interval[100]=interval[100]+fin[j]
+        county+=1
+    else:
+        if(min[j]<rel+1):
+            interval[i]=interval[i]+fin[j]
+            countyy[i]+=1
+        else:
+            #print("interval=",interval[i])
+            rel+=1
+            i+=1
+            countyy[i]+=1
+            interval[i]=interval[i]+fin[j]
+    #print("interval=", interval[i], "j=", j, "i=", i,"min=",min[j],"fin=",fin[j],"rel=",rel,"countyy=",countyy[i])
+
+
+#get the new values which are the mean values for each interval(each m/s difference)
+for i in range (101):
+    if(i==0):
+        interval[i]=interval[i]/count
+    elif(i==100):
+        interval[i]=interval[i]/county
+    else:
+        interval[i]=interval[i]/countyy[i]
+    print("interval=",interval[i],"j=",j,"i=",i)
+
+#im graphing out delta(speed), doesn't matter if the bottom line goes 0-100, it goes 0-100 in my array, which is ordered by the speed
+plt.plot(interval)
 plt.show()
 
