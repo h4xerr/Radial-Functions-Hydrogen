@@ -1,25 +1,61 @@
 import numpy as np
-
-
-X=np.zeros((2,2))                                                                      #X gate
+x=np.zeros((2,2))                                                                      #X gate
 g=np.zeros((2,1))                                                                      #ground state
 e=np.zeros((2,1))                                                                      #excited state
-X[0][1]=1
-X[1][0]=1
+h=np.ones((2,2))                                                                       #Hadamard gate
+Z=np.zeros((2,2))
+y=np.zeros((2,2))
+Z[0][0]=1
+Z[1][1]=-1
+x[0][1]=1
+x[1][0]=1
 g[0][0]=1
 e[1][0]=1
-c=np.zeros((2,1))                                                                      #X|g>
-b=np.zeros((2,1))                                                                      #X|e>
-c[0][0]=X[0][0]*g[0][0]+X[0][1]*g[1][0]
-c[1][0]=X[1][0]*g[0][0]+X[1][1]*g[1][0]
-b[0][0]=X[0][0]*e[0][0]+X[0][1]*e[1][0]
-b[1][0]=X[1][0]*e[0][0]+X[1][1]*e[1][0]
-h=np.ones((2,2))                                                                       #Hadamard gate
 h[1][1]=-1
-p=np.zeros((2,1))                                                                      #|+>
-m=np.zeros((2,1))                                                                      #|->
-p[0][0]=h[0][0]*g[0][0]+h[0][1]*g[1][0]
-p[1][0]=h[1][0]*g[0][0]+h[1][1]*g[1][0]
-m[0][0]=h[0][0]*e[0][0]+h[0][1]*e[1][0]
-m[1][0]=h[1][0]*e[0][0]+h[1][1]*e[1][0]
-print(p)
+
+
+
+
+
+word=input()
+lst = [w for w in word]
+ln=int(len(word))
+lst1=[0]*ln
+f=0
+for w in range(ln):
+    if (lst[w] == 'H'):
+        lst1[w] = h
+    if (lst[w] == 'X'):
+        lst1[w] = x
+    if (lst[w] == "E"):
+        lst1[w] = e
+    if (lst[w] == "G"):
+        lst1[w] = g
+    if (lst[w] == "Z"):
+        lst1[w] = Z
+
+#first i want to create a matrix multiplicator that checks the sizes of the matrices and gives me the end result matrix, i will make it as a function
+def mmp(a,b):
+    for i in range(n):
+            for j in range(m1):
+                c=0
+                for z in range(m):
+                    c=c+a[i][z]*b[z][j]
+                rez[i][j]=c
+                #print(rez[i][j], " ", end="")
+    return rez
+for w in range(ln-1):
+    n = np.size(lst1[w], 0)
+    m = np.size(lst1[w], 1)
+    m1 = np.size(lst1[w+1], 1)
+    a = np.ones((n, m))
+    b = np.ones((m, m1))
+    rez = np.zeros((n, m1))
+    a = lst1[w]
+    b = lst1[w + 1]
+    lst1[w+1]=mmp(a,b)
+    print(lst1[w+1])
+
+
+
+
