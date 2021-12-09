@@ -6,8 +6,13 @@ e=np.zeros((2,1))                                                               
 h=np.ones((2,2))                                                                       #Hadamard gate
 Z=np.zeros((2,2))
 y=np.zeros((2,2))
+s=np.zeros((2,2))
+s1=np.zeros((2,2))
 one=np.zeros((2,2))
 zr=np.zeros((2,2))
+y1=np.zeros((2,2))
+s[0][0]=1
+s[1][1]=2
 Z[0][0]=1
 Z[1][1]=-1
 x[0][1]=1
@@ -15,11 +20,15 @@ x[1][0]=1
 g[0][0]=1
 e[1][0]=1
 h[1][1]=-1
-y[0][1]=-1
-y[1][0]=1
+y[0][1]=-2
+y[1][0]=2
+s1[0][0]=1
+s1[1][1]=-1
 one[0][0]=1
 one[1][1]=1
 br=0
+y1[0][1]=-1
+y1[1][0]=1
 
 
 
@@ -30,6 +39,8 @@ ln=int(len(word))
 lst1=[0]*ln
 lst2=[one]*ln
 f=0
+bry=0
+brs=0
 for w in range(ln):
     if (lst[w] == 'H'):
         lst1[w] = 1/math.sqrt(2)*h
@@ -42,24 +53,25 @@ for w in range(ln):
     if (lst[w] == "Z"):
         lst1[w] = Z
     if (lst[w] == "Y"):
-        lst1[w]=one
-        br+=1
-        i=w
-        if(br%2==0):
-            while i < ln:
-                lst2[i]=one
-                i += 1
+        bry += 1
+        if (bry % 2 == 0 and bry != 0):
+            lst1[w] = one
         else:
-            while i < ln:
-                lst2[i] =y
-                i += 1
-
+            lst1[w] = y1
+        lst2[w]=y
+    if (lst[w] == "S"):
+        brs += 1
+        if (brs % 2 == 0 and brs != 0):
+            lst1[w] = s1
+        else:
+            lst1[w] = one
+        lst2[w]=s
 
 
 
 
 #i want to create a matrix multiplicator that checks the sizes of the matrices and gives me the end result matrix, i will make it as a function
-def mmp(a,b):
+def mmp(d,f):
     for i in range(n):
             for j in range(m1):
                 c=0
@@ -67,13 +79,15 @@ def mmp(a,b):
                     c=c+a[i][z]*b[z][j]
                 rez[i][j]=c
     return rez
-def mmp2(a,b):
+
+def mmp2(d,f):
     for i in range(n):
             for j in range(m1):
-                c=0
+                c1=0
                 for z in range(m):
-                    c=c+a[i][z]*b[z][j]
-                rez2[i][j]=c
+                    c1=c1+d[i][z]*f[z][j]
+                    #print(d[i][z],"X",f[z][j],i,j,z,c1)
+                rez2[i][j]=c1
     return rez2
 
 
@@ -86,13 +100,50 @@ for w in range(ln-1):
     b = np.ones((m, m1))
     rez = np.zeros((n, m1))
     rez2 = np.zeros((n, m1))
+    p = np.zeros((n, m1))
+    d = lst2[w]
+    f = lst2[w + 1]
+    lst2[w + 1] = mmp2(d, f)
+    p = lst2[w + 1]
+    p1 = np.zeros((2, 2))
+    for i in range(n):
+        print("")
+        for j in range(m1):
+            br = 0
+            br1 = 0
+            if (p[i][j] > 0):
+                p1[i][j] = p[i][j]
+                while p1[i][j] != 1:
+                    p1[i][j] = p1[i][j] / 2
+                    br += 1
+            elif (p[i][j] < 0):
+                p1[i][j] = p[i][j]
+                while p1[i][j] != -1:
+                    p1[i][j] = p1[i][j] / 2
+                    br += 1
+            # print(p[i][j], br, end="")
+            if (br % 4 == 0 and br != 0):
+                p1[i][j] = p1[i][j] * 1
+            elif (br % 2 == 0 and br % 4 != 0):
+                p1[i][j] = p1[i][j] * -1
+            elif (br % 3 == 0 and br != 0):
+                p1[i][j] = p1[i][j] * -2
+            elif (br != 0):
+                p1[i][j] = p1[i][j] * 2
     a = lst1[w]
     b = lst1[w + 1]
     lst1[w+1]=mmp(a,b)
-    #print(lst2[w+1])
-    print(lst[w+1],a," X ",b," = ",lst1[w+1]," X ",lst2[w+1]," = ",mmp2(lst1[w+1],lst2[w+1]))
+
+
+
+
+    print("")
+    print(lst[w+1],a,"X",b,"=",lst1[w+1])
+    print(lst2[w+1],d," X ",f," = ",p1)
+
     print("")
     print("")
+
 
 
 
